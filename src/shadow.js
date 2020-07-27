@@ -1,11 +1,13 @@
 class Shadow extends Traveller{
   
-  constructor(startPosition, startRotation) {
+  constructor(startPosition, startRotation, traveller) {
     super(startPosition);
     this.rotation = startRotation;
     this.color = 'red';
     this.lastNotZeroDeltaPos = 0;
     this.trailLength = 150;
+    this.traveller = traveller;
+    this.distanceFromTraveller = this.position.dist(this.traveller.position);
   }
   
   prepareColor() {
@@ -21,6 +23,7 @@ class Shadow extends Traveller{
     }else{
       super.update(this.lastNotZeroDeltaPos, dRot);
     }
+    this.distanceFromTraveller = this.position.dist(this.traveller.position);
   }
   
   bodyDisplay() {

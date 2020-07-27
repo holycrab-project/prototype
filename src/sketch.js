@@ -1,5 +1,6 @@
 let traveller;
 let grid;
+
 let shadows = [];
 let timeOutShadowSpawning = 3000;
 
@@ -12,6 +13,7 @@ let rotationVerso = 0;
 
 let ost;
 
+const MAX_SHADOWS_LENGTH = 200;
 
 function preload() {
   // dogfooding - this is because security constraints in Firefox
@@ -89,7 +91,8 @@ function SpawnShadow() {
     shadowStartPosition.x += radius*cos(radians(angle));
     shadowStartPosition.y += radius*sin(radians(angle));
 
-    shadows.push(new Shadow(shadowStartPosition, angle-90));
+    shadows.push(new Shadow(shadowStartPosition, angle-90, traveller));
+    shadows = _.first(_.sortBy(shadows, 'distanceFromTraveller'), MAX_SHADOWS_LENGTH);
   }
 
   timeOutShadowSpawning = random(3000, 5000);
