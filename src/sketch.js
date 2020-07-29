@@ -5,7 +5,6 @@ let playArea;
 let traveller;
 let grid;
 
-const MAX_SHADOWS_LENGTH = 200;
 let shadows = [];
 let timeOutShadowSpawning = 3000;
 
@@ -18,6 +17,7 @@ let rotationVerso = 0;
 
 let ost;
 
+const MAX_SHADOWS_LENGTH = 200;
 
 function preload() {
   ost = loadSound('https://holycrab-project.github.io/prototype/src/resources/ost.mp3');
