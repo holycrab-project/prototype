@@ -1,11 +1,12 @@
 const Flatten = globalThis["@flatten-js/core"];
-//const {segment} = Flatten;
+const {Point} = Flatten;
 
 let playArea;
 let traveller;
 let grid;
 
 let shadows = [];
+let food = [];
 let timeOutShadowSpawning = 3000;
 
 let walking = false;
@@ -17,7 +18,8 @@ let rotationVerso = 0;
 
 let ost;
 
-const MAX_SHADOWS_LENGTH = 200;
+const MAX_SHADOWS_LENGTH = 10;
+const MAX_FOOD_LENGTH = 5;
 
 function preload() {
   ost = loadSound('src/resources/ost.mp3');
@@ -54,6 +56,7 @@ function draw() {
 
   grid.display();
   ShadowsDisplay();
+  FoodDisplay();
   traveller.display();
   pop();
 }
@@ -112,7 +115,7 @@ function calculatePlayArea() {
 function updateWorld() {
   //update shadows
   shadows = _.filter(shadows, function(shadow) {
-    return !shadow.dead;
+    return !shadow.died;
   });
 }
 
@@ -125,6 +128,20 @@ function displayPlayArea() {
   vertex(playArea.vertices[3].x, playArea.vertices[3].y);
   endShape(CLOSE);
 }
+
+function FoodMaker(position) {
+  if (!traveller.timeReverse) {
+    let foodPosition = traveller.position.copy();
+    let angle = random(0, 359);
+    let radius = random(50, 70);
+    foodPosition.x += radius * cos(radians(angle)) - random(0, width);
+    foodPosition.y += radius * sin(radians(angle)) - random(0, height);
+
+    food.push(new Food(foodPosition));
+    food = _.last(_.sortBy(food, 'distanceFromTraveller'), MAX_FOOD_LENGTH);
+  }
+}
+
 
 function SpawnShadow() {
   if (!traveller.timeReverse) {
@@ -140,6 +157,19 @@ function SpawnShadow() {
 
   timeOutShadowSpawning = random(3000, 5000);
   setTimeout(SpawnShadow, timeOutShadowSpawning);
+}
+
+function FoodDisplay(){
+  let displayableFood = [];
+  _.each(food, function (food, i) {
+    if ((food.boundingBox.intersect(playArea).length > 0) || (playArea.contains(food.boundingBox))) {
+      displayableFood.push([food, i]);
+    }
+  });
+  for (let i = 0; i < displayableFood.length; i++) {
+    let [food, foodIndex] = displayableFood[i];
+    food.display();
+  }
 }
 
 function ShadowsDisplay() {
