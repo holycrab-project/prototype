@@ -41,7 +41,7 @@ function draw() {
   }
 
   updateWorld();
-  
+
   traveller.update(deltaPos, rotationVerso * rotationSpeed);
   ShadowsUpdate(deltaPos, rotationVerso * rotationSpeed);
 
@@ -149,7 +149,7 @@ function ShadowsDisplay() {
   });
 
   for (let i = 0; i < displayableShadows.length; i++) {
-    shadow.display();
+    displayableShadows[i].display();
   }
 
   //console.log(shadows.length, displayableShadows.length);
