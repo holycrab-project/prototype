@@ -43,16 +43,17 @@ class Traveller extends Lifeform {
   }
 
   display() {
+    //uncomment these to debug
     //this.bBoxDisplay();
-
-    this.headDisplay();
-    this.collisionTrailDisplay();
-    //super.display();
-    //this.trailDisplay();
+    //this.headDisplay();
+    //this.collisionTrailDisplay();
+    
+    super.display();
+    this.trailDisplay();
   }
 
   calculateHead() {
-    let marg = 5.0;
+    let marg = 3.0;
     this.bBoxMinX = this.position.x - marg;
     this.bBoxMinY = this.position.y - marg;
     this.bBoxMaxX = this.position.x + marg;

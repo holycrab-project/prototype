@@ -8,6 +8,8 @@ class Shadow extends Traveller {
     this.trailLength = 150;
     this.traveller = traveller;
     this.distanceFromTraveller = this.position.dist(this.traveller.position);
+    this.dying = false;
+    this.died = false;
   }
 
   prepareColor() {
@@ -31,5 +33,11 @@ class Shadow extends Traveller {
     // eyes
     this.drawBodyPart(3, -5, 1, 2, 0);
     this.drawBodyPart(-3, -5, 1, 2, 0);
+  }
+
+  dye() {
+    if(this.dying) return;
+    this.dying = true;
+    console.log("Aaaaaaah! I'll dye!!!!")
   }
 }

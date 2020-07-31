@@ -39,6 +39,9 @@ function draw() {
     traveller.walk(walkingSpeed);
     ShadowsWalk(walkingSpeed);
   }
+
+  updateWorld();
+
   traveller.update(deltaPos, rotationVerso * rotationSpeed);
   ShadowsUpdate(deltaPos, rotationVerso * rotationSpeed);
 
@@ -47,6 +50,7 @@ function draw() {
   translate(-traveller.position.x, -traveller.position.y);
 
   calculatePlayArea();
+  checkCollisions();
 
   grid.display();
   ShadowsDisplay();
@@ -105,6 +109,13 @@ function calculatePlayArea() {
     new Flatten.Point(p3.x, p3.y)]);
 }
 
+function updateWorld() {
+  //update shadows
+  shadows = _.filter(shadows, function(shadow) {
+    return !shadow.dead;
+  });
+}
+
 function displayPlayArea() {
   fill(color(0, 255, 0, 100));
   beginShape();
@@ -132,30 +143,11 @@ function SpawnShadow() {
 }
 
 function ShadowsDisplay() {
-
-  // let displayableShadows = _.filter(shadows, function(shadow) { 
-  //   print(i);
-  //   return (shadow.boundingBox.intersect(playArea).length > 0) ||         (playArea.contains(shadow.boundingBox)); }
-
-  let displayableShadows = [];
-  _.each(shadows, function (shadow, i) {
-    if ((shadow.boundingBox.intersect(playArea).length > 0) || (playArea.contains(shadow.boundingBox))) {
-      displayableShadows.push([shadow, i]);
-    }
-  });
-
-  for (let i = 0; i < displayableShadows.length; i++) {
-    let [shadow, shadowIndex] = displayableShadows[i];
-    //temporary here
-    if (traveller.checkTrailCollision(shadow.head)) {
-      console.log("I killed a shadow!");
-      shadows.splice(shadowIndex, 1);
-    } else {
+  _.each(shadows, function(shadow) {
+    if (shadow.boundingBox.intersect(playArea).length > 0 || playArea.contains(shadow.boundingBox)){
       shadow.display();
     }
-  }
-
-  //console.log(shadows.length, displayableShadows.length);
+  });
 }
 
 function ShadowsWalk(walkingSpeed) {
@@ -168,6 +160,19 @@ function ShadowsUpdate(dPos, dRot) {
   for (let i = 0; i < shadows.length; i++) {
     shadows[i].update(dPos, dRot);
   }
+}
+
+function checkCollisions() {
+  checkShadowsCollisions();
+}
+
+function checkShadowsCollisions() {
+  _.each(shadows, function(shadow) {
+    let shadowColliding = (shadow.boundingBox.intersect(traveller.boundingBox).length > 0);
+    let shadowIncluded = traveller.boundingBox.contains(shadow.boundingBox);
+
+    if ( (shadowColliding || shadowIncluded) ) shadow.dye();
+  });
 }
 
 function rotatePointAround(p, o, angle) {
