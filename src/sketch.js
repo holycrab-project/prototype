@@ -111,7 +111,7 @@ function calculatePlayArea() {
 
 function updateWorld() {
   //update shadows
-  shadows = _.filter(shadows, function(shadow) { 
+  shadows = _.filter(shadows, function(shadow) {
     return !shadow.dead;
   });
 }
@@ -143,16 +143,11 @@ function SpawnShadow() {
 }
 
 function ShadowsDisplay() {
-
-  let displayableShadows = _.filter(shadows, function(shadow) { 
-    return (shadow.boundingBox.intersect(playArea).length > 0) || (playArea.contains(shadow.boundingBox)); 
+  _.each(shadows, function(shadow) {
+    if (shadow.boundingBox.intersect(playArea).length > 0 || playArea.contains(shadow.boundingBox)){
+      shadow.display();
+    }
   });
-
-  for (let i = 0; i < displayableShadows.length; i++) {
-    displayableShadows[i].display();
-  }
-
-  //console.log(shadows.length, displayableShadows.length);
 }
 
 function ShadowsWalk(walkingSpeed) {
@@ -172,19 +167,12 @@ function checkCollisions() {
 }
 
 function checkShadowsCollisions() {
-  let shadowsToCheck = _.filter(shadows, function(shadow) { 
+  _.each(shadows, function(shadow) {
     let shadowColliding = (shadow.boundingBox.intersect(traveller.boundingBox).length > 0);
     let shadowIncluded = traveller.boundingBox.contains(shadow.boundingBox);
-    
-    return ( (shadowColliding || shadowIncluded) && (!shadow.dying) );
-  });
 
-  for (let i = 0; i < shadowsToCheck.length; i++) {
-    let shadow = shadowsToCheck[i];
-    if (traveller.checkTrailCollision(shadow.head)) {
-      shadow.dye();
-    } 
-  }
+    if ( (shadowColliding || shadowIncluded) ) shadow.dye();
+  });
 }
 
 function rotatePointAround(p, o, angle) {

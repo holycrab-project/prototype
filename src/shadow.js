@@ -36,6 +36,7 @@ class Shadow extends Traveller {
   }
 
   dye() {
+    if(this.dying) return;
     this.dying = true;
     console.log("Aaaaaaah! I'll dye!!!!")
   }
