@@ -19,7 +19,7 @@ let rotationVerso = 0;
 let ost;
 
 const MAX_SHADOWS_LENGTH = 10;
-const MAX_FOOD_LENGTH = 5;
+const MAX_FOOD_LENGTH = 6;
 
 function preload() {
   ost = loadSound('src/resources/ost.mp3');
@@ -113,10 +113,26 @@ function calculatePlayArea() {
 }
 
 function updateWorld() {
-  //update shadows
-  shadows = _.filter(shadows, function(shadow) {
-    return !shadow.died;
-  });
+  updateShadows();
+  updateFood();
+}
+
+function updateShadows(){
+  newShadows = [];
+  _.each(shadows, function(shadow){
+    if (!shadow.died) {
+      newShadows.push(shadow)
+    }else{
+      FoodMaker(shadow.position)
+    }
+  })
+  shadows = newShadows;
+}
+
+function updateFood(){
+  food = _.filter(food, function(piece){
+    return !piece.eaten;
+  })
 }
 
 function displayPlayArea() {
@@ -131,17 +147,10 @@ function displayPlayArea() {
 
 function FoodMaker(position) {
   if (!traveller.timeReverse) {
-    let foodPosition = traveller.position.copy();
-    let angle = random(0, 359);
-    let radius = random(50, 70);
-    foodPosition.x += radius * cos(radians(angle));
-    foodPosition.y += radius * sin(radians(angle));
-
-    food.push(new Food(foodPosition));
-    food = _.last(_.sortBy(food, 'distanceFromTraveller'), MAX_FOOD_LENGTH);
+    // you are not going to get more food until the table is not gone!
+    if(food.length < MAX_FOOD_LENGTH) food.push(new Food(position));
   }
 }
-
 
 function SpawnShadow() {
   if (!traveller.timeReverse) {
@@ -160,16 +169,11 @@ function SpawnShadow() {
 }
 
 function FoodDisplay(){
-  let displayableFood = [];
-  _.each(food, function (food, i) {
+  _.each(food, function (food) {
     if ((food.boundingBox.intersect(playArea).length > 0) || (playArea.contains(food.boundingBox))) {
-      displayableFood.push([food, i]);
+      food.display();
     }
   });
-  for (let i = 0; i < displayableFood.length; i++) {
-    let [food, foodIndex] = displayableFood[i];
-    food.display();
-  }
 }
 
 function ShadowsDisplay() {
@@ -194,6 +198,7 @@ function ShadowsUpdate(dPos, dRot) {
 
 function checkCollisions() {
   checkShadowsCollisions();
+  checkFoodCollissions();
 }
 
 function checkShadowsCollisions() {
@@ -201,7 +206,16 @@ function checkShadowsCollisions() {
     let shadowColliding = (shadow.boundingBox.intersect(traveller.boundingBox).length > 0);
     let shadowIncluded = traveller.boundingBox.contains(shadow.boundingBox);
 
-    if ( (shadowColliding || shadowIncluded) ) shadow.dye();
+    if ( (shadowColliding || shadowIncluded) ){ shadow.dye(); }
+  });
+}
+
+function checkFoodCollissions(){
+  _.each(food, function(piece) {
+    let trvColliding = (piece.boundingBox.intersect(traveller.boundingBox).length > 0);
+    let trvIncluded = traveller.boundingBox.contains(piece.boundingBox);
+
+    if ( (trvColliding || trvIncluded) ){ piece.eat(); }
   });
 }
 

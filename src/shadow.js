@@ -40,16 +40,11 @@ class Shadow extends Traveller {
     this.alpha -= 1;
     this.updateColor();
 
-    if(this.alpha <= 0 ){
-      this.died = true;
-      console.log("Aaaaaaah! I'm dead!!!!")
-    }
+    if(this.alpha <= 0 ) this.died = true;
   }
 
   dye() {
     if(this.dying) return;
     this.dying = true;
-    this.alpha = 255;
-    console.log("Aaaaaaah! I'll dye!!!!")
   }
 }
