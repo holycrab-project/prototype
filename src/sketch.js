@@ -167,20 +167,20 @@ function ShadowsUpdate(dPos, dRot) {
   }
 }
 
-function checkCollision() {
+function checkCollisions() {
   checkShadowsCollisions();
 }
 
 function checkShadowsCollisions() {
   let shadowsToCheck = _.filter(shadows, function(shadow) { 
-    let shadowColliding = (shadow.boundingBox.intersect(traveller).length > 0);
-    let shadowIncluded = (traveller.contains(shadow.boundingBox);
+    let shadowColliding = (shadow.boundingBox.intersect(traveller.boundingBox).length > 0);
+    let shadowIncluded = traveller.boundingBox.contains(shadow.boundingBox);
     
     return ( (shadowColliding || shadowIncluded) && (!shadow.dying) );
   });
 
   for (let i = 0; i < shadowsToCheck.length; i++) {
-    let shadow = displayableShadows[i];
+    let shadow = shadowsToCheck[i];
     if (traveller.checkTrailCollision(shadow.head)) {
       shadow.dye();
     } 
