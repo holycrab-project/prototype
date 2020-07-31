@@ -20,7 +20,7 @@ let ost;
 const MAX_SHADOWS_LENGTH = 200;
 
 function preload() {
-  ost = loadSound('https://holycrab-project.github.io/prototype/src/resources/ost.mp3');
+  ost = loadSound('src/resources/ost.mp3');
 }
 
 function setup() {
