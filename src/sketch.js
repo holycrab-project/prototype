@@ -134,8 +134,8 @@ function FoodMaker(position) {
     let foodPosition = traveller.position.copy();
     let angle = random(0, 359);
     let radius = random(50, 70);
-    foodPosition.x += radius * cos(radians(angle)) - random(0, width);
-    foodPosition.y += radius * sin(radians(angle)) - random(0, height);
+    foodPosition.x += radius * cos(radians(angle));
+    foodPosition.y += radius * sin(radians(angle));
 
     food.push(new Food(foodPosition));
     food = _.last(_.sortBy(food, 'distanceFromTraveller'), MAX_FOOD_LENGTH);
