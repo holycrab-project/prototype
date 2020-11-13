@@ -1,11 +1,12 @@
 const Flatten = globalThis["@flatten-js/core"];
-//const {segment} = Flatten;
+const {Point} = Flatten;
 
 let playArea;
 let traveller;
 let grid;
 
 let shadows = [];
+let food = [];
 let timeOutShadowSpawning = 3000;
 
 let walking = false;
@@ -17,7 +18,8 @@ let rotationVerso = 0;
 
 let ost;
 
-const MAX_SHADOWS_LENGTH = 200;
+const MAX_SHADOWS_LENGTH = 10;
+const MAX_FOOD_LENGTH = 6;
 
 function preload() {
   ost = loadSound('src/resources/ost.mp3');
@@ -54,6 +56,7 @@ function draw() {
 
   grid.display();
   ShadowsDisplay();
+  FoodDisplay();
   traveller.display();
   pop();
 }
@@ -110,10 +113,26 @@ function calculatePlayArea() {
 }
 
 function updateWorld() {
-  //update shadows
-  shadows = _.filter(shadows, function(shadow) {
-    return !shadow.dead;
-  });
+  updateShadows();
+  updateFood();
+}
+
+function updateShadows(){
+  newShadows = [];
+  _.each(shadows, function(shadow){
+    if (!shadow.died) {
+      newShadows.push(shadow)
+    }else{
+      FoodMaker(shadow.position)
+    }
+  })
+  shadows = newShadows;
+}
+
+function updateFood(){
+  food = _.filter(food, function(piece){
+    return !piece.eaten;
+  })
 }
 
 function displayPlayArea() {
@@ -124,6 +143,13 @@ function displayPlayArea() {
   vertex(playArea.vertices[2].x, playArea.vertices[2].y);
   vertex(playArea.vertices[3].x, playArea.vertices[3].y);
   endShape(CLOSE);
+}
+
+function FoodMaker(position) {
+  if (!traveller.timeReverse) {
+    // you are not going to get more food until the table is not gone!
+    if(food.length < MAX_FOOD_LENGTH) food.push(new Food(position));
+  }
 }
 
 function SpawnShadow() {
@@ -140,6 +166,14 @@ function SpawnShadow() {
 
   timeOutShadowSpawning = random(3000, 5000);
   setTimeout(SpawnShadow, timeOutShadowSpawning);
+}
+
+function FoodDisplay(){
+  _.each(food, function (food) {
+    if ((food.boundingBox.intersect(playArea).length > 0) || (playArea.contains(food.boundingBox))) {
+      food.display();
+    }
+  });
 }
 
 function ShadowsDisplay() {
@@ -164,6 +198,7 @@ function ShadowsUpdate(dPos, dRot) {
 
 function checkCollisions() {
   checkShadowsCollisions();
+  checkFoodCollissions();
 }
 
 function checkShadowsCollisions() {
@@ -171,7 +206,16 @@ function checkShadowsCollisions() {
     let shadowColliding = (shadow.boundingBox.intersect(traveller.boundingBox).length > 0);
     let shadowIncluded = traveller.boundingBox.contains(shadow.boundingBox);
 
-    if ( (shadowColliding || shadowIncluded) ) shadow.dye();
+    if ( (shadowColliding || shadowIncluded) ){ shadow.dye(); }
+  });
+}
+
+function checkFoodCollissions(){
+  _.each(food, function(piece) {
+    let trvColliding = (piece.boundingBox.intersect(traveller.boundingBox).length > 0);
+    let trvIncluded = traveller.boundingBox.contains(piece.boundingBox);
+
+    if ( (trvColliding || trvIncluded) ){ piece.eat(); }
   });
 }
 

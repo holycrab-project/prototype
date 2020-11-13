@@ -13,16 +13,19 @@ class Lifeform {
     this.bodyAmplitude = 0.21;
     this.baseFootY = 1.5;
     this.prepareColor();
-    this.color = color(this.colorR, this.colorG, this.colorB);
-
+    this.updateColor();
     this.stop();
+  }
 
+  updateColor(){
+    this.color = color(this.colorR, this.colorG, this.colorB, this.alpha);
   }
 
   prepareColor() {
     this.colorR = 255
     this.colorG = 255;
     this.colorB = 255;
+    this.alpha = 255;
   }
 
   walk(speed) {
@@ -47,7 +50,6 @@ class Lifeform {
   }
 
   display() {
-
     stroke(this.color);
     push();
     translate(this.position.x, this.position.y);

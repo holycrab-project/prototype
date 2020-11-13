@@ -3,7 +3,6 @@ class Shadow extends Traveller {
   constructor(startPosition, startRotation, traveller) {
     super(startPosition);
     this.rotation = startRotation;
-    this.color = 'red';
     this.lastNotZeroDeltaPos = 0;
     this.trailLength = 150;
     this.traveller = traveller;
@@ -16,9 +15,11 @@ class Shadow extends Traveller {
     this.colorR = 255
     this.colorG = 0;
     this.colorB = 0;
+    this.alpha = 255;
   }
 
   update(dPos, dRot) {
+    if(this.dying) this.finishMe();
     if (dPos != 0) {
       this.lastNotZeroDeltaPos = dPos
       super.update(dPos, dRot);
@@ -35,9 +36,15 @@ class Shadow extends Traveller {
     this.drawBodyPart(-3, -5, 1, 2, 0);
   }
 
+  finishMe(){
+    this.alpha -= 1;
+    this.updateColor();
+
+    if(this.alpha <= 0 ) this.died = true;
+  }
+
   dye() {
     if(this.dying) return;
     this.dying = true;
-    console.log("Aaaaaaah! I'll dye!!!!")
   }
 }
